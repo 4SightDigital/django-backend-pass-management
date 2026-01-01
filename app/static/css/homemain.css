@@ -1,0 +1,178 @@
+/* Global Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+/* Header Styles */
+.header {
+    background-color: #ffffff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 98%;
+    position: fixed;
+    top: 0;
+    z-index: 10;
+    color: #343a40;
+    height: 60px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    height: 80px;
+    width: auto;
+    margin-left: -35px;
+}
+
+/* Header Icons */
+.header-icons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: nowrap;
+}
+
+.header-icons .icon:hover {
+    transform: scale(1.3);
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+/* Sidebar Containers */
+.sidebar-container {
+    display: flex;
+    position: fixed;
+    top: 60px; /* Adjusted for header height */
+    left: 0;
+    width: 450px; /* Increased sidebar width */
+    height: 100vh;
+    background-color: #e9ecef; /* Light background */
+    padding: 20px; /* Padding for spacing */
+}
+
+/* Vertical Sidebar */
+.vertical-sidebar {
+    background-color: #f1f3f5; /* Light background for form sidebar */
+    width: calc(100% - 70px); /* Full width minus extra space */
+    height: auto; /* Auto height */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* Stretch to fill space */
+    margin-right: 20px; /* Space between sidebar and form */
+    padding: 20px; /* Add padding to the sidebar */
+}
+
+/* Form Row Styling */
+.form-row {
+    display: flex;
+    flex-direction: column; /* Stack label and input vertically */
+    margin-bottom: 15px; /* Space between form rows */
+}
+
+/* Add margin to the first form-row */
+.form-row:first-child {
+    margin-top: 20px; /* Space above the first form row, or remove this if using padding */
+}
+
+
+
+/* Input Styling */
+.form-row input {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    font-size: 14px;
+    background-color: #ffffff;
+    color: #495057;
+    width: 100%; /* Full width of the form item */
+    transition: border 0.3s ease;
+}
+
+.form-row input:focus {
+    border-color: #000c66; /* Focused input border color */
+}
+
+/* Button Group Styling */
+.button-group {
+    display: flex;
+    justify-content: space-between; /* Space between buttons */
+    margin-top: 20px; /* Space above button group */
+}
+.button-group button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #000c66; /* Button color */
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.button-group button:hover {
+    background-color: #000c66; /* Darker blue on hover */
+}
+
+
+/* Main Content Area */
+.main-content {
+    margin-left: 480px; /* Adjusted for new sidebar width and extra spacing */
+    padding: 40px;
+    background-color: #f8f9fa;
+    margin-top: 60px; /* Below header */
+    min-height: 100vh;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    overflow: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;  /* Stack labels and inputs vertically on smaller screens */
+    }
+
+    .form-row label, .form-row input {
+        width: 100%;  /* Full width for both labels and inputs */
+    }
+
+    .button-group button {
+        width: 100%;  /* Buttons take full width on smaller screens */
+    }
+
+    .header-icons {
+        gap: 10px;
+    }
+
+    .icon {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* Improve Form Spacing */
+input::placeholder {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+input {
+    font-family: 'Arial', sans-serif;
+}
+
+label {
+    font-family: 'Arial', sans-serif;
+}

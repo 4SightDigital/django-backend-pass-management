@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Ticket Allocation Management</h2>
+
+    <div class="card mb-4">
+        <div class="card-header">Allocate Tickets to a Source</div>
+        <div class="card-body">
+            <form method="POST" id="allocationForm">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label>1. Select Event</label>
+                        <select name="event" id="eventSelect" class="form-control" required>
+                            <option value="">-- Choose Event --</option>
+                            {% for event in events %}
+                            <option value="{{ event.id }}" data-venue="{{ event.venue.id }}">
+                                {{ event.name }} ({{ event.venue.name }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>2. Source Name</label>
+                        <input type="text" name="source_name" class="form-control" placeholder="Enter Source Name" required>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>3. Category</label>
+                        <select name="ticket_category" id="categorySelect" class="form-control" required disabled>
+                            <option value="">-- Select Event First --</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat.id }}" data-venue="{{ cat.venue.id }}" style="display:none;">
+                                {{ cat.name }} (Cap: {{ cat.seats_count }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label>4. Quantity</label>
+                        <input type="number" name="tickets_available" id="ticketsInput" class="form-control" min="1" required>
+                    </div>
+
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Go</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Existing Allocations</div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Source</th>
+                        <th>Category</th>
+                        <th>Allocated</th>
+                        <th>Remaining (Zone)</th> <th>Zone Total</th>       </tr>
+                </thead>
+                <tbody>
+                    {% for alloc in allocations %}
+                    <tr>
+                        <td>{{ alloc.event.name }}</td>
+                        <td>{{ alloc.source.name }}</td>
+                        <td>{{ alloc.category.name }}</td>
+                        <td><span class="badge bg-primary">{{ alloc.total_quantity }}</span></td>
+                        <td>
+                            <span class="badge {% if alloc.zone_remaining < 5 %}bg-danger{% else %}bg-success{% endif %}">
+                                {{ alloc.zone_remaining }}
+                            </span>
+                        </td>
+                        <td>{{ alloc.get_category_total }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center">No allocations found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const eventSelect = document.getElementById('eventSelect');
+    const categorySelect = document.getElementById('categorySelect');
+    const categoryOptions = categorySelect.querySelectorAll('option');
+
+    eventSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const venueId = selectedOption.getAttribute('data-venue');
+        
+        // Reset Category dropdown
+        categorySelect.value = "";
+        
+        if (!venueId) {
+            categorySelect.disabled = true;
+            return;
+        }
+
+        // Enable and Filter Categories
+        categorySelect.disabled = false;
+        let matchFound = false;
+
+        categoryOptions.forEach(option => {
+            if (option.value === "") return;
+            
+            if (option.getAttribute('data-venue') === venueId) {
+                option.style.display = "block";
+                matchFound = true;
+            } else {
+                option.style.display = "none";
+            }
+        });
+
+        if (!matchFound) {
+            categorySelect.disabled = true;
+            alert("This venue has no categories assigned!");
+        }
+    });
+});
+</script>
+{% endblock %}

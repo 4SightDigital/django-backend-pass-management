@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block page_title %}Main Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-4 col-6">
+    <div class="small-box bg-info">
+      <div class="inner"><h3>{{ stats.total_events }}</h3><p>Active Events</p></div>
+      <div class="icon"><i class="fas fa-calendar-alt"></i></div>
+    </div>
+  </div>
+  <div class="col-lg-4 col-6">
+    <div class="small-box bg-success">
+      <div class="inner"><h3>{{ stats.total_venues }}</h3><p>Venues</p></div>
+      <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+    </div>
+  </div>
+  <div class="col-lg-4 col-6">
+    <div class="small-box bg-warning">
+      <div class="inner"><h3>{{ stats.total_allocations }}</h3><p>Allocations</p></div>
+      <div class="icon"><i class="fas fa-ticket-alt"></i></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+    <div class="card-header border-transparent">
+        <h3 class="card-title">Select Event for Seating Grid</h3>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table m-0">
+                <thead>
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Venue</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                    <tr>
+                        <td><strong>{{ event.name }}</strong></td>
+                        <td>{{ event.venue.name }}</td>
+                        <td>{{ event.start_datetime|date:"d M Y, H:i" }}</td>
+                        <td>
+                            <a href="{% url 'event_dashboard' event.id %}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-th"></i> View Seating Grid
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center">No events found. Create one in the Events section.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

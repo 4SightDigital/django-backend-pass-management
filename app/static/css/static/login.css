@@ -1,0 +1,217 @@
+/* Global Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+}
+
+/* Adjusted Company Name Styling */
+
+
+.company-name {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centers the h1 horizontally */
+    position: relative;
+    top: 5px;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background: none; /* Ensure no background blur is applied */
+}
+
+.company-name h1 {
+    font-weight: bold;
+    text-align: center;
+    font-size: 20px; /* Adjust as needed */
+    margin: 0; /* Removes default margin */
+    color: #333; /* Adjust text color if needed */
+    flex: 1; /* This ensures the h1 takes the available space */
+}
+
+/* Adjust logo position */
+.company-name img {
+    position: absolute;
+    top: -10px; /* Adjust the vertical position */
+    left: -15px; /* Adjust the horizontal position */
+    max-height: 70px; /* Adjust the size of the logo */
+    
+}
+
+/* Window Styling */
+.window {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 800px;
+    padding: 20px;
+    position: relative;
+    margin-top: 70px; /* Ensure content doesn't overlap with the logo */
+}
+
+/* Remaining CSS */
+.window-content {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+
+
+/* Login Container */
+.login-container {
+    background-color: #ffffff;
+    padding: 20px 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto; /* Center the container horizontally */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    
+}
+
+/* Login Form */
+.login-form {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+}
+
+/* Form Group (Inline Label and Input) */
+.form-group {
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.form-group label {
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+    margin-right: 10px;
+    width: 30%; /* Adjust this value to control the label width */
+}
+
+.form-group input {
+    width: 70%; /* Adjust this value to control the input width */
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* Smaller and Centered Login Button */
+button[type="submit"] {
+    width: 100px; /* Smaller width */
+    padding: 8px 12px; /* Adjusted padding for a more compact look */
+    font-size: 14px; /* Slightly smaller font size */
+    font-weight: bold;
+    color: #fff;
+    background-color: #000c66;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: center; /* Centers the button within the form */
+    margin-top: 20px; /* Adds some space above the button */
+    margin-left: 50px;
+}
+
+
+.back-button-container {
+    display: flex;
+    justify-content: flex-end; /* Aligns the button to the right */
+    
+}
+
+/* The existing login-button styles */
+.back-button {
+    margin-top: 10px; /* Adjust margin as needed */
+    margin-bottom: 10px; /* Adjust margin as needed */
+}
+
+
+
+.back-button button {
+    background-color: #000c66; /* Button background color */
+    color: white; /* Button text color */
+    border: none; /* Remove default border */
+    padding: 5px 10px; /* Small padding for a compact look */
+    font-size: 12px; /* Smaller font size */
+    cursor: pointer; /* Pointer cursor on hover */
+    border-radius: 3px; /* Rounded corners */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Slight shadow for depth */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+
+button:hover {
+    background-color: #000c66;
+}
+
+
+.messages {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .messages li {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+  }
+  
+  .messages .error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+  
+  .messages .info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+  }
+  
+  .messages .success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .form-row {
+        flex-direction: column;
+
+    }
+
+    .button-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    button {
+        width: 100%;
+    }
+}

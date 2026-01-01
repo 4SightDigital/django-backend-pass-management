@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block page_title %}Edit Venue{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <h3>Edit Venue: {{ venue.name }}</h3>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-chic-primary mt-3">Update Venue</button>
+        <a href="{% url 'venues_page' %}" class="btn btn-chic-outline mt-3">Cancel</a>
+    </form>
+</div>
+{% endblock %}

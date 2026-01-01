@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .dashboard-wrapper { display: flex; height: calc(100vh - 60px); background: #121212; color: #e0e0e0; }
+    
+    /* Left Sidebar */
+    .booking-sidebar { width: 320px; background: #f8f9fa; color: #333; padding: 20px; border-right: 1px solid #ddd; overflow-y: auto; }
+    .sidebar-title { background: #4a4a4a; color: white; padding: 10px; border-radius: 4px; text-align: center; margin-bottom: 20px; }
+
+    /* Grid Area */
+    .grid-area { flex-grow: 1; padding: 20px; overflow-y: auto; }
+    .section-container { background: #2a2a2a; border-radius: 8px; margin-bottom: 25px; border: 1px solid #444; }
+    .section-header { background: #3d3d3d; padding: 10px 15px; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; }
+    
+    /* Table Styling */
+    .excel-table { width: 100%; border-collapse: collapse; background: white; color: #333; }
+    .excel-table th { background: #e2e2e2; border: 1px solid #ccc; padding: 8px; font-size: 0.8rem; text-transform: uppercase; color: #0056b3; }
+    .excel-table td { border: 1px solid #eee; padding: 6px 12px; font-size: 0.9rem; cursor: pointer; }
+    .excel-table tr:hover td { background: #f1f7ff; }
+    .excel-table tr.selected td { background: #cfe2ff !important; border-color: #0d6efd; }
+    
+    .text-avail { color: #28a745; font-weight: bold; text-align: center; }
+    .text-allot { color: #dc3545; font-weight: bold; text-align: center; }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="booking-sidebar shadow">
+        <h5 class="sidebar-title">Booking Entry</h5>
+        <form method="POST" action="{% url 'process_claim' %}">
+            {% csrf_token %}
+            <input type="hidden" name="event_id" value="{{ event.id }}">
+            <input type="hidden" name="category_id" id="selected_cat_id">
+
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Source Name</label>
+                <select name="source_id" class="form-control form-control-sm" required>
+                    <option value="">-- Choose Source --</option>
+                    {% for source in sources %}
+                        <option value="{{ source.id }}">{{ source.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Claimant Name</label>
+                <input type="text" name="claimant_name" class="form-control form-control-sm" required>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Department</label>
+                <input type="text" name="department" class="form-control form-control-sm" placeholder="e.g. Police">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Selected Category</label>
+                <input type="text" id="selected_cat_name" class="form-control form-control-sm" readonly placeholder="Click a zone on the right">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Quantity</label>
+                <input type="number" name="quantity" id="input_qty" class="form-control form-control-sm" min="1" required>
+                <div class="form-text">Venue Availability: <span id="max_avail_text">0</span></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm w-100 mt-3">Confirm Booking</button>
+        </form>
+    </div>
+
+    <div class="grid-area">
+        <h3 class="mb-4">{{ event.name }} - Seating Inventory</h3>
+        
+        {% regroup dashboard_data by category.parent as parent_groups %}
+        <div class="row">
+            {% for group in parent_groups %}
+            <div class="col-md-6 col-xl-4 mb-4">
+                <div class="section-container shadow-sm">
+                    <div class="section-header">
+                        <span class="fw-bold">{{ group.grouper.name|default:"General Categories" }}</span>
+                        <span class="badge bg-primary">{{ group.list|length }} Zones</span>
+                    </div>
+                    <table class="excel-table">
+                        <thead>
+                            <tr>
+                                <th>Zone/Box</th>
+                                <th class="text-center">Avail</th>
+                                <th class="text-center">Allot</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in group.list %}
+                            <tr onclick="selectZone(this, '{{ item.category.id }}', '{{ item.category.name }}', '{{ item.available }}')">
+                                <td>{{ item.category.name }}</td>
+                                <td class="text-avail">{{ item.available }}</td>
+                                <td class="text-allot">{{ item.allocated }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+function selectZone(row, id, name, avail) {
+    // 1. Highlight the row
+    document.querySelectorAll('.excel-table tr').forEach(r => r.classList.remove('selected'));
+    row.classList.add('selected');
+
+    // 2. Update the Sidebar form hidden and display inputs
+    document.getElementById('selected_cat_id').value = id;
+    document.getElementById('selected_cat_name').value = name;
+    document.getElementById('max_avail_text').innerText = avail;
+}
+</script>
+{% endblock %}

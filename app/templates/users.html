@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Management{% endblock %}
+
+{% block extra_styles %}
+{{ block.super }}
+<style>
+    /* --- Styles --- */
+    .accordion > .card { overflow: visible; }
+    .accordion .card-header { padding: 0; border-bottom: 0; }
+    .accordion .btn-link { color: var(--text-dark); font-weight: 500; padding: 1rem 1.25rem; width: 100%; }
+    .accordion .btn-link:hover, .accordion .btn-link:focus { text-decoration: none; background-color: var(--light-gray); }
+    .accordion .btn-link[aria-expanded="true"] { background-color: var(--light-gray); color: var(--primary-color); }
+    .form-section-header { font-size: 1.1rem; font-weight: 600; color: var(--text-light); margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); }
+    .table thead { background-color: var(--light-gray); color: var(--text-dark); font-weight: 600; border-bottom: 2px solid var(--border-color); }
+    .table-hover tbody tr:hover { background-color: #e9ecef; }
+    .table td, .table th { vertical-align: middle; }
+    .action-buttons form { display: inline-block; margin-left: 0.25rem; }
+    .action-buttons .btn { min-width: 90px; }
+    #userSearch { font-family: 'Poppins', 'Font Awesome 5 Free', sans-serif; font-weight: 900; }
+    .form-group label { font-weight: 500; color: var(--text-light); }
+    .text-danger { font-size: 0.8rem; }
+</style>
+{% endblock extra_styles %}
+
+
+{% block content %}
+<div class="container-fluid">
+    <div class="accordion" id="addUserAccordion">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left text-decoration-none" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="{% if form.errors %}true{% else %}false{% endif %}">
+                        <i class="fas fa-plus-circle mr-2"></i> Add New User
+                    </button>
+                </h2>
+            </div>
+
+            <div id="collapseOne" class="collapse {% if form.errors %}show{% endif %}" data-parent="#addUserAccordion">
+                <div class="card-body">
+                    <form method="post" id="addUserForm" novalidate>
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}<p class="mb-0">{{ error }}</p>{% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <h5 class="form-section-header">User Information</h5>
+                        <div class="form-row">
+                            <div class="form-group col-md-3">{{ form.username.label_tag }} {{ form.username }}<div class="text-danger">{{ form.username.errors }}</div></div>
+                            <div class="form-group col-md-3">{{ form.first_name.label_tag }} {{ form.first_name }}<div class="text-danger">{{ form.first_name.errors }}</div></div>
+                            <div class="form-group col-md-3">{{ form.last_name.label_tag }} {{ form.last_name }}<div class="text-danger">{{ form.last_name.errors }}</div></div>
+                            <div class="form-group col-md-3">{{ form.email.label_tag }} {{ form.email }}<div class="text-danger">{{ form.email.errors }}</div></div>
+                        </div>
+
+                        <h5 class="form-section-header mt-4">Permissions</h5>
+                        <div class="form-row">
+                            <div class="form-group col-md-4">{{ form.access_rights.label_tag }} {{ form.access_rights }}<div class="text-danger">{{ form.access_rights.errors }}</div></div>
+                            <div class="col-md-8 d-flex align-items-center">
+                                <small class="text-muted">Note: Default password will be set to <strong>adminpassword</strong> automatically.</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group d-flex justify-content-end mt-4">
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-check mr-2"></i>Create User</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 card-title"><i class="fas fa-users mr-2"></i>Existing Users</h5>
+            <div class="col-md-4">
+                <input type="text" id="userSearch" class="form-control" placeholder="&#xf002; Search users...">
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" data-update-url="{% url 'update_user' 0 %}">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th style="width: 190px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr data-id="{{ u.id }}">
+                            <td class="view" data-field="username">{{ u.username }}</td>
+                            <td class="view" data-field="full_name">{{ u.get_full_name }}</td>
+                            <td class="view" data-field="email">{{ u.email }}</td>
+                            <td class="view" data-field="access_rights">{{ u.get_access_rights_display }}</td>
+                            
+                            <td class="edit d-none"><input class="form-control form-control-sm" name="username" value="{{ u.username }}"></td>
+                            <td class="edit d-none"><input class="form-control form-control-sm mb-1" name="first_name" value="{{ u.first_name }}"><input class="form-control form-control-sm" name="last_name" value="{{ u.last_name }}"></td>
+                            <td class="edit d-none"><input class="form-control form-control-sm" name="email" value="{{ u.email }}"></td>
+                            <td class="edit d-none">
+                                <select class="form-control form-control-sm" name="access_rights">
+                                    <option value="SuperAdmin" {% if u.access_rights == 'SuperAdmin' %}selected{% endif %}>SuperAdmin</option>
+                                    <option value="EventAdmin" {% if u.access_rights == 'EventAdmin' %}selected{% endif %}>EventAdmin</option>
+                                    <option value="GateStaff" {% if u.access_rights == 'GateStaff' %}selected{% endif %}>GateStaff</option>
+                                </select>
+                            </td>
+                            
+                            <td class="action-buttons">
+                                <div class="view-actions">
+                                    <button class="btn btn-sm btn-outline-primary edit-btn"><i class="fas fa-edit mr-1"></i>Edit</button>
+                                    <form action="{% url 'delete_user' u.id %}" method="post" onsubmit="return confirm('Are you sure you want to delete user \'{{ u.username }}\'?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash mr-1"></i>Delete</button>
+                                    </form>
+                                </div>
+                                <div class="edit-actions d-none">
+                                    <button class="btn btn-sm btn-success save-btn"><i class="fas fa-check mr-1"></i>Save</button>
+                                    <button class="btn btn-sm btn-secondary cancel-btn"><i class="fas fa-times mr-1"></i>Cancel</button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center text-muted py-4">No users found. Add one using the form above!</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_scripts %}
+{{ block.super }}
+<script>
+$(document).ready(function() {
+    const CSRF_TOKEN = '{{ csrf_token }}';
+
+    // --- INLINE TABLE EDITING LOGIC ---
+    $('tbody').on('click', '.edit-btn', function() {
+        const row = $(this).closest('tr');
+        row.find('.view, .view-actions').addClass('d-none');
+        row.find('.edit, .edit-actions').removeClass('d-none');
+    });
+
+    $('tbody').on('click', '.cancel-btn', function() {
+        const row = $(this).closest('tr');
+        row.find('.view, .view-actions').removeClass('d-none');
+        row.find('.edit, .edit-actions').addClass('d-none');
+    });
+
+    $('tbody').on('click', '.save-btn', function() {
+        const row = $(this).closest('tr');
+        const userId = row.data('id');
+        const updateUrl = $('table').data('update-url').replace('/0/', `/${userId}/`);
+
+        const data = {
+            username: row.find('input[name="username"]').val(),
+            first_name: row.find('input[name="first_name"]').val(),
+            last_name: row.find('input[name="last_name"]').val(),
+            email: row.find('input[name="email"]').val(),
+            access_rights: row.find('select[name="access_rights"]').val(),
+            csrfmiddlewaretoken: CSRF_TOKEN
+        };
+        
+        $.ajax({
+            url: updateUrl, type: 'POST', data: data,
+            success: function(response) {
+                if (response.success) {
+                    row.find('[data-field="username"]').text(response.username);
+                    row.find('[data-field="full_name"]').text(response.full_name);
+                    row.find('[data-field="email"]').text(response.email);
+                    row.find('[data-field="access_rights"]').text(response.access_rights);
+                    
+                    row.find('.view, .view-actions').removeClass('d-none');
+                    row.find('.edit, .edit-actions').addClass('d-none');
+                } else {
+                    alert('Error: ' + (response.error || 'An unknown error occurred.'));
+                }
+            },
+            error: function(xhr) {
+                alert("An unexpected error occurred. Please check the console and try again.");
+                console.log(xhr.responseText);
+            }
+        });
+    });
+
+    // --- SEARCH ---
+    $('#userSearch').on('keyup', function() {
+        const value = $(this).val().toLowerCase();
+        $('tbody tr').filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
+</script>
+{% endblock extra_scripts %}

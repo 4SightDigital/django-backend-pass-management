@@ -1,0 +1,20 @@
+.container {
+    display: flex; /* Use flexbox for horizontal layout */
+    justify-content: space-between; /* Space between lists and input area */
+    max-width: 1200px; /* Increased max-width for better spacing */
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.selectioncontainer {
+    margin-top: 20px; /* Add some margin for spacing */
+    padding: 10px; /* Optional padding */
+    background-color: #f8f9fa; /* Light background for visibility */
+    border: 1px solid #ccc; /* Optional border for visibility */
+    border-radius: 8px; /* Optional rounded corners */
+}

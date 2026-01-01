@@ -1,0 +1,198 @@
+    /* === GLOBAL === */
+    body {
+        font-family: "Inter", "Segoe UI", sans-serif;
+        background-color: #f5f7fa;
+        color: #222;
+        margin: 0;
+        padding: 0;
+    }
+
+    h3 {
+        margin-bottom: 8px;
+        font-size: 1rem;
+        color: #34495e;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 4px;
+    }
+
+    /* === SIDEBAR === */
+    .sidebar-container {
+        display: flex;
+        padding: 20px;
+        width: 500px;
+    }
+
+    .vertical-sidebar {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        width: 100%;
+    }
+
+    label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 5px;
+        color: #2c3e50;
+    }
+
+    input[type="file"] {
+        display: block;
+        width: 100%;
+        margin-bottom: 15px;
+        padding: 6px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background: #f9fafb;
+        cursor: pointer;
+    }
+
+    input[type="file"]:hover {
+        border-color: #007bff;
+    }
+
+    /* === BUTTONS === */
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    button {
+        cursor: pointer;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 16px;
+        font-size: 0.95rem;
+        transition: background 0.3s ease, transform 0.2s;
+    }
+
+    button:hover {
+        transform: translateY(-1px);
+    }
+
+    #submit-button {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    #submit-button:hover {
+        background-color: #0062cc;
+    }
+
+    #clear-button {
+        background-color: #e0e0e0;
+        color: #333;
+    }
+
+    #clear-button:hover {
+        background-color: #d5d5d5;
+    }
+
+    #upload-status {
+        font-size: 0.9rem;
+        text-align: center;
+        padding: 8px;
+        border-radius: 6px;
+    }
+
+    /* === COLUMN NAMES === */
+    #column-names-container {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 20px;
+    }
+
+    #column-names-container h3 {
+        font-size: 1rem;
+        color: #2c3e50;
+    }
+
+    ul {
+        padding: 0;
+        list-style: none;
+    }
+
+    li {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        margin-bottom: 6px;
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+
+    /* === MAIN SECTION === */
+    .selectcontainer {
+        flex: 1;
+        background: #ffffff;
+        margin: 20px;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .button-wrapper {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .addButton {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .addButton:hover {
+        background-color: #218838;
+    }
+
+    .action-button {
+        background-color: #17a2b8;
+        color: #fff;
+    }
+
+    .action-button:hover {
+        background-color: #138496;
+    }
+
+    .flash-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        text-align: center;
+        font-weight: 500;
+    }
+
+    .input-container {
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 15px;
+        background: #f9fafb;
+        min-height: 100px;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+        .sidebar-container {
+            width: 100%;
+            padding: 10px;
+        }
+
+        .selectcontainer {
+            margin: 10px;
+            padding: 15px;
+        }
+
+        .button-wrapper {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }

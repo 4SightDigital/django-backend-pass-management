@@ -1,0 +1,56 @@
+
+/* General styles for the container */
+#column-names-container {
+    margin-top: 20px;
+    display: none;
+    font-size: 12px; /* Reduced font size */
+}
+
+/* Flex container for the column lists */
+.column-list-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Styles for each column list */
+#bankbook-columns, #bankstatement-columns {
+    flex: 1;
+    margin: 0 10px;
+    border: 1px solid #ccc; /* Add border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 10px; /* Inner padding */
+    background-color: #f9f9f9; /* Light background color */
+    max-height: 500px; /* Set maximum height */
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+/* Scoped list items only inside those containers */
+#bankbook-columns li,
+#bankstatement-columns li {
+  padding: 5px;
+  margin: 5px 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #000c66;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: grab;
+  user-select: none;
+  transition: background-color 0.2s, transform 0.1s;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Hover effect only for those list items */
+#bankbook-columns li:hover,
+#bankstatement-columns li:hover {
+  background-color: rgba(255, 255, 255, 1);
+  color: #000c66;
+  transform: scale(1.05);
+}
+
+
+/* Change cursor when dragging */
+.dragging {
+    opacity: 0.5; /* Slightly transparent when dragging */
+    cursor: grabbing; /* Change cursor when dragging */
+}
