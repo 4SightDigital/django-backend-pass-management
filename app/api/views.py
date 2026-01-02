@@ -1,6 +1,7 @@
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 
@@ -11,6 +12,7 @@ from app.models import (
     CustomUser,
     SpaceAllocation,
 )
+
 from .serializers import (
     VenueSerializer,
     EventSerializer,
@@ -18,16 +20,50 @@ from .serializers import (
     AllocationSerializer,
     SpaceCategorySerializer,
 )
-from app.views import calculate_seats_with_children, create_recursive
+
+# =====================================================
+# HELPER FUNCTIONS (MUST BE ABOVE THE VIEWS)
+# =====================================================
+
+def calculate_seats_with_children(hierarchy):
+    total = 0
+    for node in hierarchy:
+        total += node.get("seats_count", 0)
+
+        children = node.get("children", [])
+        if children:
+            total += calculate_seats_with_children(children)
+
+    return total
 
 
-# ================= VENUE =================
+def create_recursive(hierarchy, venue, parent=None):
+    for node in hierarchy:
+        category = SpaceCategory.objects.create(
+            venue=venue,
+            parent=parent,
+            name=node["name"],
+            category_type=node["category_type"],
+            ticket_tier=node.get("ticket_tier"),
+            seats_count=node.get("seats_count", 0),
+        )
+
+        children = node.get("children", [])
+        if children:
+            create_recursive(children, venue, category)
+
+# =====================================================
+# VENUES
+# =====================================================
+
 class VenueListCreateAPI(generics.ListCreateAPIView):
     queryset = Venue.objects.all()
     serializer_class = VenueSerializer
 
     def get_permissions(self):
-        return [AllowAny()]
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 
 class VenueDetailAPI(generics.RetrieveUpdateDestroyAPIView):
@@ -35,15 +71,22 @@ class VenueDetailAPI(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = VenueSerializer
 
     def get_permissions(self):
-        return [AllowAny()]
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 
-# ================= VENUE HIERARCHY =================
-class VenueHierarchyAPI(generics.GenericAPIView):
+# =====================================================
+# SPACE CATEGORY TREE
+# =====================================================
+
+class VenueSpaceTreeAPI(generics.GenericAPIView):
     serializer_class = SpaceCategorySerializer
 
     def get_permissions(self):
-        return [AllowAny()]
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
     def get(self, request, venue_id):
         categories = SpaceCategory.objects.filter(
@@ -56,29 +99,8 @@ class VenueHierarchyAPI(generics.GenericAPIView):
     @transaction.atomic
     def post(self, request, venue_id):
         venue = get_object_or_404(Venue, id=venue_id)
+        hierarchy = request.data
 
-        # 1. Extract seating array from frontend payload
-        seating = request.data.get("seating", [])
-        if not isinstance(seating, list):
-            return Response(
-                {"error": "Invalid seating format"},
-                status=400
-            )
-
-        # 2. Normalize frontend structure → backend structure
-        def normalize_category(category):
-            return {
-                "name": category.get("categoryName") or category.get("name"),
-                "seats_count": category.get("categoryTotalSeats") or category.get("seats"),
-                "children": [
-                    normalize_category(child)
-                    for child in category.get("subCategories", [])
-                ]
-            }
-
-        hierarchy = [normalize_category(cat) for cat in seating]
-
-        # 3. Validate total seats against venue capacity
         total_seats = calculate_seats_with_children(hierarchy)
         if total_seats > venue.total_capacity:
             return Response(
@@ -86,23 +108,23 @@ class VenueHierarchyAPI(generics.GenericAPIView):
                 status=400
             )
 
-        # 4. Replace existing hierarchy
         venue.spaces.all().delete()
         create_recursive(hierarchy, venue)
 
-        return Response(
-            {"status": "Hierarchy saved successfully"},
-            status=200
-        )
+        return Response({"status": "Space hierarchy saved successfully"})
 
+# =====================================================
+# EVENTS
+# =====================================================
 
-# ================= EVENT =================
 class EventListCreateAPI(generics.ListCreateAPIView):
     queryset = Event.objects.select_related('venue')
     serializer_class = EventSerializer
 
     def get_permissions(self):
-        return [AllowAny()]
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 
 class EventDetailAPI(generics.RetrieveUpdateDestroyAPIView):
@@ -110,17 +132,25 @@ class EventDetailAPI(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = EventSerializer
 
     def get_permissions(self):
-        return [AllowAny()]
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 
-# ================= USER =================
+# =====================================================
+# USERS
+# =====================================================
+
 class UserListAPI(generics.ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
 
-# ================= ALLOCATION =================
+# =====================================================
+# ALLOCATIONS
+# =====================================================
+
 class AllocationListAPI(generics.ListCreateAPIView):
     queryset = SpaceAllocation.objects.select_related(
         'event', 'category', 'source'
@@ -128,4 +158,24 @@ class AllocationListAPI(generics.ListCreateAPIView):
     serializer_class = AllocationSerializer
 
     def get_permissions(self):
-        return [AllowAny()]
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+
+# =====================================================
+# META / ENUMS
+# =====================================================
+
+class MetaEnumsAPI(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response({
+            "category_types": ["Tier", "Block", "Section"],
+            "ticket_tiers": ["VVIP", "VIP", "Regular"],
+            "rules": {
+                "seats_exist_only_on_leaf_nodes": True,
+                "parent_seats_should_be_zero": True
+            }
+        })
