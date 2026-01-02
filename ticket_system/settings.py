@@ -2,24 +2,21 @@ import os
 import dj_database_url
 from pathlib import Path
 from datetime import timedelta
+from corsheaders.defaults import default_headers
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ======================
-# SECURITY
+# SECURITY (Development)
 # ======================
-# In production, SECRET_KEY comes from environment variable
-SECRET_KEY = os.environ.get(
-    "SECRET_KEY",
-    "django-insecure-ryz__km6@8n8a9#$1yrcdj%m&w6*(*7#hds^x=8r1f1*_23mdi"  # fallback for dev
-)
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
+DEBUG = True
 
-# Turn off debug in production
-DEBUG = os.environ.get("DEBUG", "True") == "True"
-
-# Allowed hosts (Render backend URL + your frontend)
+# Allow all hosts for development
 ALLOWED_HOSTS = ["*"]
 
+# Allow frontend to POST without CSRF issues
+CSRF_TRUSTED_ORIGINS = ["*"]
 
 # ======================
 # APPLICATIONS
@@ -38,21 +35,22 @@ INSTALLED_APPS = [
     # API
     'rest_framework',
     'drf_spectacular',
-    
+
     # CORS
-    "corsheaders",
+    'corsheaders',
 ]
 
 # ======================
-# REST FRAMEWORK & JWT
+# REST FRAMEWORK
 # ======================
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    # Allow all requests in development
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ),
 }
 
@@ -83,7 +81,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-from corsheaders.defaults import default_headers
+# CORS config
 CORS_ALLOW_HEADERS = list(default_headers) + ["authorization"]
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -95,7 +93,7 @@ ROOT_URLCONF = 'ticket_system.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  # app/templates
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -111,25 +109,20 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ticket_system.wsgi.application'
 
 # ======================
-# DATABASE
+# DATABASE (Dev-friendly)
 # ======================
 DATABASES = {
     "default": dj_database_url.config(
         default=os.environ.get("DATABASE_URL", f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
         conn_max_age=600,
-        ssl_require=True
+        ssl_require=False  # Turn off SSL for dev
     )
 }
 
 # ======================
 # PASSWORD VALIDATION
 # ======================
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
-]
+AUTH_PASSWORD_VALIDATORS = []
 
 # ======================
 # INTERNATIONALIZATION
@@ -140,11 +133,10 @@ USE_I18N = True
 USE_TZ = True
 
 # ======================
-# STATIC FILES (REQUIRED FOR RENDER)
+# STATIC FILES
 # ======================
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # << This fixes collectstatic error
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # ======================
 # DEFAULT AUTO FIELD

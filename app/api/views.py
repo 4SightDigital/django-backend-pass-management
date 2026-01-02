@@ -1,5 +1,5 @@
 from rest_framework import generics
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.db import transaction
@@ -63,7 +63,7 @@ class VenueListCreateAPI(generics.ListCreateAPIView):
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
-        return [IsAuthenticated()]
+        return [AllowAny()]
 
 
 class VenueDetailAPI(generics.RetrieveUpdateDestroyAPIView):
@@ -73,7 +73,7 @@ class VenueDetailAPI(generics.RetrieveUpdateDestroyAPIView):
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
-        return [IsAuthenticated()]
+        return [AllowAny()]
 
 
 # =====================================================
@@ -86,7 +86,7 @@ class VenueSpaceTreeAPI(generics.GenericAPIView):
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
-        return [IsAuthenticated()]
+        return [AllowAny()]
 
     def get(self, request, venue_id):
         categories = SpaceCategory.objects.filter(
@@ -124,7 +124,7 @@ class EventListCreateAPI(generics.ListCreateAPIView):
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
-        return [IsAuthenticated()]
+        return [AllowAny()]
 
 
 class EventDetailAPI(generics.RetrieveUpdateDestroyAPIView):
@@ -134,7 +134,7 @@ class EventDetailAPI(generics.RetrieveUpdateDestroyAPIView):
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
-        return [IsAuthenticated()]
+        return [AllowAny()]
 
 
 # =====================================================
@@ -144,7 +144,7 @@ class EventDetailAPI(generics.RetrieveUpdateDestroyAPIView):
 class UserListAPI(generics.ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
 
 # =====================================================
@@ -160,7 +160,7 @@ class AllocationListAPI(generics.ListCreateAPIView):
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
-        return [IsAuthenticated()]
+        return [AllowAny()]
 
 
 # =====================================================
