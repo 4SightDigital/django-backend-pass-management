@@ -16,7 +16,9 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 # Allow frontend to POST without CSRF issues
-CSRF_TRUSTED_ORIGINS = ["*"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000",           # React dev server (optional, for local development)
+    "http://127.0.0.1:3000",           # React dev server (optional)
+    "https://pass1432.vercel.app", ]
 
 # ======================
 # APPLICATIONS
